@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartPark - Admin Dashboard</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f1ea;
+            color: #333;
+        }
+
+        header {
+            background: #3f4a45;
+            color: white;
+            padding: 22px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #e7e1d5;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #59645f;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .slot {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .available {
+            background: #dfe8df;
+            color: #38513b;
+        }
+
+        .occupied {
+            background: #eadfd9;
+            color: #69483d;
+        }
+
+        .issue-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .issue-card h3 {
+            margin-top: 0;
+        }
+
+        .issue-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #eadfd9;
+            color: #69483d;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .no-issues {
+            color: #777;
+        }
+
+        @media (max-width: 800px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .slot-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div>
+
+        <h1>SmartPark</h1>
+
+        <p>Admin Dashboard</p>
+
+    </div>
+
+
+    <button
+        class="logout-btn"
+        onclick="logoutAdmin()">
+
+        Logout
+
+    </button>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="welcome">
+
+        <h2>Admin Management</h2>
+
+        <p>
+            Monitor the complete SmartPark system.
+        </p>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>Total Slots</h3>
+
+            <p id="totalSlots">0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Available</h3>
+
+            <p id="availableSlots">0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Occupied</h3>
+
+            <p id="occupiedSlots">0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Total Users</h3>
+
+            <p id="totalUsers">0</p>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- PARKING STATUS -->
+
+    <div class="section">
+
+        <h2>Parking Status</h2>
+
+        <p>
+            Current status of all parking slots.
+        </p>
+
+        <div
+            id="slotGrid"
+            class="slot-grid">
+        </div>
+
+    </div>
+
+    <!-- ML PREDICTION -->
+
+<div class="section">
+
+    <h2>Parking Availability Prediction</h2>
+
+    <p>
+        ML-based prediction for the current hour.
+    </p>
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>Predicted Occupied</h3>
+
+            <p id="adminPredictedOccupied">0</p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Predicted Available</h3>
+
+            <p id="adminPredictedAvailable">0</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- ALL BOOKINGS -->
+
+<div class="section">
+
+    <h2>All Bookings</h2>
+
+    <p>
+        View all parking bookings made by users.
+    </p>
+
+    <div id="bookingList">
+
+        <p class="no-issues">
+            Loading bookings...
+        </p>
+
+    </div>
+
+</div>
+    <!-- STAFF REPORTS -->
+
+    <div class="section">
+
+        <h2>Staff Reported Problems</h2>
+
+        <p>
+            Problems reported by parking staff.
+        </p>
+
+        <div id="issueList">
+
+            <p class="no-issues">
+                Loading reported problems...
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+function loadUserCount() {
+
+    fetch("http://127.0.0.1:5000/admin/users/count")
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        document.getElementById("totalUsers").textContent =
+            data.total_users;
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+    });
+
+}
+function loadAdminPrediction() {
+
+    const currentHour = new Date().getHours();
+
+    fetch("http://127.0.0.1:5000/ml-prediction/" + currentHour)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        document.getElementById("adminPredictedOccupied").textContent =
+            data.predicted_occupied;
+
+        document.getElementById("adminPredictedAvailable").textContent =
+            data.predicted_available;
+
+    })
+
+    .catch(error => {
+
+        console.error("Admin prediction error:", error);
+
+    });
+
+} 
+
+function loadParkingStatus() {
+
+    fetch("http://127.0.0.1:5000/slots")
+
+    .then(response => response.json())
+
+    .then(slots => {
+
+        const slotGrid =
+            document.getElementById("slotGrid");
+
+        slotGrid.innerHTML = "";
+
+        let available = 0;
+        let occupied = 0;
+
+
+        slots.forEach(slot => {
+
+            const div =
+                document.createElement("div");
+
+            div.classList.add("slot");
+
+            div.textContent =
+                slot.slot_number +
+                " - " +
+                slot.status;
+
+
+            if (slot.status === "Available") {
+
+                div.classList.add("available");
+
+                available++;
+
+            } else {
+
+                div.classList.add("occupied");
+
+                occupied++;
+
+            }
+
+
+            slotGrid.appendChild(div);
+
+        });
+
+
+        document.getElementById("totalSlots").textContent =
+            slots.length;
+
+        document.getElementById("availableSlots").textContent =
+            available;
+
+        document.getElementById("occupiedSlots").textContent =
+            occupied;
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+    });
+
+}
+
+
+
+function loadBookings() {
+
+    fetch("http://127.0.0.1:5000/admin/bookings")
+
+    .then(response => response.json())
+
+    .then(bookings => {
+
+        const bookingList =
+            document.getElementById("bookingList");
+
+        bookingList.innerHTML = "";
+
+
+        if (bookings.length === 0) {
+
+            bookingList.innerHTML =
+                '<p class="no-issues">No bookings found.</p>';
+
+            return;
+
+        }
+
+
+        bookings.forEach(booking => {
+
+            const card =
+                document.createElement("div");
+
+            card.classList.add("issue-card");
+
+
+            card.innerHTML = `
+
+                <h3>
+                    Booking #${booking.id}
+                </h3>
+
+                <p>
+                    <strong>User:</strong>
+                    ${booking.user_name}
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    ${booking.user_email}
+                </p>
+
+                <p>
+                    <strong>Slot:</strong>
+                    ${booking.slot_number}
+                </p>
+
+                <p>
+                    <strong>Vehicle:</strong>
+                    ${booking.vehicle_number}
+                </p>
+
+                <p>
+                    <strong>Date & Time:</strong>
+                    ${booking.booking_date}
+                </p>
+
+                <p>
+                    <strong>Amount:</strong>
+                    ₹${booking.amount}
+                </p>
+
+                <p>
+                    <strong>Payment:</strong>
+                    ${booking.payment_status}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${booking.status}
+                </p>
+
+            `;
+
+
+            bookingList.appendChild(card);
+
+        });
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        document.getElementById("bookingList").innerHTML =
+            '<p class="no-issues">Unable to load bookings.</p>';
+
+    });
+
+}
+
+
+
+
+function loadIssues() {
+
+    fetch("http://127.0.0.1:5000/issues")
+
+    .then(response => response.json())
+
+    .then(issues => {
+
+        const issueList =
+            document.getElementById("issueList");
+
+        issueList.innerHTML = "";
+
+
+        if (issues.length === 0) {
+
+            issueList.innerHTML =
+                '<p class="no-issues">No problems reported.</p>';
+
+            return;
+
+        }
+
+
+        issues.forEach(issue => {
+
+            const card =
+                document.createElement("div");
+
+            card.classList.add("issue-card");
+
+
+            card.innerHTML = `
+
+                <h3>
+                    Slot ${issue.slot_number}
+                </h3>
+
+                <p>
+                    <strong>Staff:</strong>
+                    ${issue.staff_name}
+                </p>
+
+                <p>
+                    <strong>Problem:</strong>
+                    ${issue.issue_type}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    ${issue.description}
+                </p>
+
+                <select
+    onchange="updateIssueStatus(${issue.id}, this.value)">
+
+    <option value="Reported"
+        ${issue.status === "Reported" ? "selected" : ""}>
+        Reported
+    </option>
+
+    <option value="In Progress"
+        ${issue.status === "In Progress" ? "selected" : ""}>
+        In Progress
+    </option>
+
+    <option value="Resolved"
+        ${issue.status === "Resolved" ? "selected" : ""}>
+        Resolved
+    </option>
+
+</select>
+
+            `;
+
+
+            issueList.appendChild(card);
+
+        });
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        document.getElementById("issueList").innerHTML =
+            '<p class="no-issues">Unable to load reported problems.</p>';
+
+    });
+
+}
+
+function updateIssueStatus(issueId, status) {
+
+    fetch("http://127.0.0.1:5000/issues/" + issueId + "/status", {
+
+        method: "PUT",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            status: status
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.message === "Issue status updated successfully") {
+
+            alert("Issue status updated successfully.");
+
+            loadIssues();
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to update issue status.");
+
+    });
+
+}
+
+function logoutAdmin() {
+
+    localStorage.removeItem("loggedInUser");
+
+    window.location.href = "../index.html";
+
+}
+
+
+loadParkingStatus();
+
+loadUserCount();
+
+loadAdminPrediction();
+
+loadBookings();
+
+loadIssues();
+
+setInterval(loadParkingStatus, 5000);
+
+
+</script>
+
+
+</body>
+
+</html>

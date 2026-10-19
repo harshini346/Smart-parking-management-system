@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartPark - Staff Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f1ea;
+            color: #333;
+        }
+
+        header {
+            background: #3f4a45;
+            color: white;
+            padding: 22px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #e7e1d5;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #59645f;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .issue-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+        }
+
+        .issue-form input,
+        .issue-form select,
+        .issue-form textarea {
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .issue-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #59645f;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #46514c;
+        }
+
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .slot {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .available {
+            background: #dfe8df;
+            color: #38513b;
+        }
+
+        .occupied {
+            background: #eadfd9;
+            color: #69483d;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 800px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .slot-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <h1>SmartPark</h1>
+        <p>Staff Dashboard</p>
+    </div>
+
+    <button class="logout-btn" onclick="logoutStaff()">
+        Logout
+    </button>
+
+</header>
+
+
+<div class="container">
+
+    <div class="welcome">
+        <h2>Staff Management</h2>
+        <p>Monitor the parking area and handle parking-related issues.</p>
+    </div>
+
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Slots</h3>
+            <p id="totalSlots">20</p>
+        </div>
+
+        <div class="card">
+            <h3>Available</h3>
+            <p id="availableSlots">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Occupied</h3>
+            <p id="occupiedSlots">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Today's Bookings</h3>
+            <p id="totalBookings">0</p>
+        </div>
+
+    </div>
+
+
+    <!-- PARKING STATUS -->
+
+    <div class="section">
+
+        <h2>Live Parking Status</h2>
+
+        <p>
+            Current parking slot status from the SmartPark system.
+        </p>
+
+        <div id="slotGrid" class="slot-grid"></div>
+
+    </div>
+
+
+    <!-- REPORT PROBLEM -->
+
+    <div class="section">
+
+        <h2>Report Parking Problem</h2>
+
+        <p>
+            Staff can report problems found in the parking area.
+        </p>
+
+        <div class="issue-form">
+
+            <input
+                type="text"
+                id="issueSlot"
+                placeholder="Slot Number (Example: A6)"
+            >
+
+            <select id="issueType">
+
+                <option value="">
+                    Select Problem Type
+                </option>
+
+                <option value="Sensor not working">
+                    Sensor not working
+                </option>
+
+                <option value="Slot blocked">
+                    Slot blocked
+                </option>
+
+                <option value="Vehicle problem">
+                    Vehicle problem
+                </option>
+
+                <option value="Booking issue">
+                    Booking issue
+                </option>
+
+                <option value="Payment issue">
+                    Payment issue
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+            <textarea
+                id="issueDescription"
+                placeholder="Describe the problem..."
+            ></textarea>
+
+            <button
+                class="submit-btn"
+                onclick="reportIssue()"
+            >
+                Report Problem
+            </button>
+
+            <div id="issueMessage" class="message"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function loadParkingStatus() {
+
+        fetch("http://127.0.0.1:5000/slots")
+
+            .then(response => response.json())
+
+            .then(slots => {
+
+                const slotGrid =
+                    document.getElementById("slotGrid");
+
+                slotGrid.innerHTML = "";
+
+                let available = 0;
+                let occupied = 0;
+
+                slots.forEach(slot => {
+
+                    const div =
+                        document.createElement("div");
+
+                    div.classList.add("slot");
+
+                    div.textContent =
+                        slot.slot_number + " - " + slot.status;
+
+                    if (slot.status === "Available") {
+
+                        div.classList.add("available");
+                        available++;
+
+                    } else {
+
+                        div.classList.add("occupied");
+                        occupied++;
+
+                    }
+
+                    slotGrid.appendChild(div);
+
+                });
+
+                document.getElementById("totalSlots").textContent =
+                    slots.length;
+
+                document.getElementById("availableSlots").textContent =
+                    available;
+
+                document.getElementById("occupiedSlots").textContent =
+                    occupied;
+
+            })
+
+            .catch(error => {
+
+                console.error(error);
+
+            });
+    }
+
+
+    function loadBookingCount() {
+
+        fetch("http://127.0.0.1:5000/bookings")
+
+            .then(response => response.json())
+
+            .then(bookings => {
+
+                document.getElementById("totalBookings").textContent =
+                    bookings.length;
+
+            })
+
+            .catch(error => {
+
+                console.error(error);
+
+            });
+    }
+
+
+    function reportIssue() {
+
+    const slot =
+        document.getElementById("issueSlot").value.trim();
+
+    const type =
+        document.getElementById("issueType").value;
+
+    const description =
+        document.getElementById("issueDescription").value.trim();
+
+    const user =
+        JSON.parse(localStorage.getItem("loggedInUser"));
+
+
+    if (!user) {
+
+        alert("Staff login required.");
+
+        return;
+    }
+
+
+    if (!slot || !type || !description) {
+
+        alert("Please fill all problem details.");
+
+        return;
+    }
+
+
+    fetch("http://127.0.0.1:5000/report-issue", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+            staff_name: user.name,
+            slot_number: slot,
+            issue_type: type,
+            description: description
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.message === "Parking problem reported successfully") {
+
+            document.getElementById("issueMessage").textContent =
+                "Problem reported successfully.";
+
+            document.getElementById("issueSlot").value = "";
+            document.getElementById("issueType").value = "";
+            document.getElementById("issueDescription").value = "";
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to report the parking problem.");
+
+    });
+
+}
+
+    function logoutStaff() {
+
+        localStorage.removeItem("loggedInUser");
+
+        window.location.href = "index.html";
+
+    }
+
+
+    loadParkingStatus();
+    loadBookingCount();
+
+    setInterval(loadParkingStatus, 5000);
+
+</script>
+
+</body>
+
+</html>

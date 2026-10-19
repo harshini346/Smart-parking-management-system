@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartPark</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <header>
+
+
+        <nav>
+
+            <a href="#">Home</a>
+
+            <a href="#parking">
+                Parking
+            </a>
+            <a href="#my-bookings">My Bookings</a>
+
+            <a href="#about">
+                About
+            </a>
+
+        </nav>
+
+
+       <button class="login-btn" id="authNavLink">
+              Login
+       </button>
+        <span id="navUserName" class="nav-user-name"></span>
+
+    </header>
+
+
+
+    <!-- HOME SECTION -->
+
+    <section class="hero">
+
+        <div class="hero-text">
+
+            <h1>
+                Smart Parking
+                Management System
+            </h1>
+
+
+            <p>
+                Find and book your parking
+                slot quickly and easily.
+            </p>
+
+
+            <button class="start-btn"
+                    onclick="goToParking()">
+
+                Find Parking
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- PARKING SECTION -->
+
+    <section id="parking"
+             class="parking-section">
+
+        <h2>
+            Parking Availability
+        </h2>
+
+
+        <p class="subtitle">
+            Choose an available parking slot
+        </p>
+
+
+        <div class="parking-grid">
+
+        </div>
+
+    </section>
+    <!-- ================= BOOKING ================= -->
+
+<section id="booking" class="booking-section">
+
+    <h2>Book Your Parking Slot</h2>
+
+    <p class="subtitle">
+        Enter your details to confirm your parking
+    </p>
+
+    <div class="booking-card">
+
+        <label>Selected Slot</label>
+
+        <input
+            type="text"
+            id="selectedSlot"
+            placeholder="Select a parking slot"
+            readonly
+        >
+
+
+        <label>Your Name</label>
+
+        <input
+            type="text"
+            id="userName"
+            placeholder="Enter your name"
+        >
+
+
+        <label>Vehicle Number</label>
+
+        <input
+            type="text"
+            id="vehicleNumber"
+            placeholder="Example: TN 01 AB 1234"
+        >
+
+
+        <label>Parking Date</label>
+
+        <input
+            type="date"
+            id="parkingDate"
+        >
+
+
+        <label>Parking Time</label>
+
+        <input
+            type="time"
+            id="parkingTime"
+        >
+
+
+        <button onclick="confirmBooking()">
+            Confirm Booking
+        </button>
+
+    </div>
+<!-- USER DASHBOARD -->
+<section id="dashboard" class="dashboard-section" style="display: none;">
+
+    <h2>My Dashboard</h2>
+    <p class="subtitle">Welcome to your SmartPark dashboard</p>
+
+    <div class="dashboard-card">
+
+        <h3>User Details</h3>
+
+        <p>
+            <strong>Name:</strong>
+            <span id="dashboardName">Guest</span>
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <span id="dashboardEmail">Not logged in</span>
+        </p>
+
+        <p>
+            <strong>Total Bookings:</strong>
+            <span id="bookingCount">0</span>
+        </p>
+        <button onclick="logoutUser()" class="logout-btn">
+            Logout
+        </button>
+
+    </div>
+
+</section>
+<section id="my-bookings" class="bookings-section">
+
+    <h2>My Bookings</h2>
+
+    <p class="subtitle">
+        Your saved parking bookings
+    </p>
+
+    <div id="bookingList"></div>
+
+</section>
+
+
+<!-- PAYMENT POPUP -->
+
+<div id="paymentModal" class="payment-modal">
+
+    <div class="payment-box">
+
+        <h2>Parking Payment</h2>
+
+        <p>Amount to Pay</p>
+
+        <h3 id="paymentAmount">₹50</h3>
+
+        <p>Scan the QR code to complete payment</p>
+
+        <!-- QR CODE WILL BE ADDED HERE -->
+        
+        <div id="qrCode">
+          <img
+             id="paymentQR"
+            alt="Payment QR Code"
+            width="200"
+            height="200"
+          >
+        </div>
+
+        <button id="paymentDoneBtn">
+            Payment Done
+        </button>
+
+        <button onclick="closePaymentModal()">
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+    <!-- ML PARKING PREDICTION -->
+
+<section id="prediction" class="prediction-section">
+
+    <h2>Parking Prediction</h2>
+
+    <p class="subtitle">
+        Estimated parking availability based on time
+    </p>
+
+    <div class="prediction-card">
+
+        <p>
+            <strong>Predicted Occupied Slots:</strong>
+            <span id="predictedOccupied">--</span>
+        </p>
+
+        <p>
+            <strong>Predicted Available Slots:</strong>
+            <span id="predictedAvailable">--</span>
+        </p>
+
+    </div>
+
+</section>
+
+    <!-- ABOUT -->
+
+    <section id="about"
+             class="about-section">
+
+        <h2>
+            About SmartPark
+        </h2>
+
+
+        <p>
+            SmartPark helps users find available
+            parking spaces and reserve them easily.
+        </p>
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <p>
+            © 2026 SmartPark
+        </p>
+
+    </footer>
+    <!-- LOGIN / REGISTER MODAL -->
+
+    <div id="authModal" class="auth-modal">
+
+       <div class="auth-box">
+
+           <span class="close-btn" onclick="closeAuth()">×</span>
+
+           <h2 id="authTitle">Login</h2>
+
+           <input
+               type="text"
+               id="authName"
+               placeholder="Enter your name"
+           >
+
+           <input
+               type="email"
+               id="authEmail"
+               placeholder="Enter your email"
+           >
+
+           <input
+               type="password"
+               id="authPassword"
+               placeholder="Enter your password"
+           >
+
+           <button onclick="handleAuth()">Login</button>
+
+           <p id="authSwitch">
+              Don't have an account?
+              <span onclick="showRegister()">Register</span>
+           </p>
+       </div>
+
+    </div>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
